@@ -19,6 +19,11 @@ class Particle {
         void update(float dt);
         void draw();
         
+        void applyForce(ofPoint force);
+        void seek(ofPoint target);
+        ofPoint getNormalPoint(ofPoint p, ofPoint a, ofPoint b);
+        void follow(vector<ofPolyline> contours, float r);
+        
         void addForce(ofPoint newForce);
         void addNoise(float turbulence);
         void addRepulsionForce(ofPoint posOfForce, float radiusSq, float scale);
@@ -94,6 +99,7 @@ class Particle {
         float alignmentStrength;
         float attractionStrength;
         float maxSpeed;
+        float maxForce;
         float damping; // damping amount when particle bounce off walls
         
         int w, h; //particle boundaries

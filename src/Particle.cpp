@@ -28,6 +28,7 @@ Particle::Particle(){
     
     limitSpeed = false;
     maxSpeed = 120.0;
+    maxForce = 10.0;
     bounceDamping = true;
     damping = 0.6;
     
@@ -142,7 +143,7 @@ void Particle::follow(vector<ofPolyline> contours, float r){
         ofPolyline ct;
         ct = contours[i];
 
-        vector<ofPoint> & pts = ct.getVertices();
+        auto pts = ct.getVertices();
 
         for (int j=0; j<pts.size()-1; j++){
             ofPoint a = pts[j];
@@ -160,7 +161,7 @@ void Particle::follow(vector<ofPolyline> contours, float r){
                 normal = normalpt;
                 ofPoint dir = b-a;
                 dir.normalize();
-                dir *= 10;
+                dir *= 10; //TODO
                 //ofPoint redir = this->vel.dot()
                 target = normalpt + dir;
             }
@@ -185,7 +186,7 @@ void Particle::update(){
     this->vel += this->accel;
     this->vel.limit(maxSpeed);
     this->pos += this->vel;
-    this->accel = 0;
+    this->accel *= 0;
 }
 
 void Particle::applyForce(ofPoint force){

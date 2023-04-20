@@ -54,6 +54,7 @@ class ofApp : public ofBaseApp{
     vector<ofPolyline> velContours;
 
     ParticleSystem *particles;
+    float smoothingSize;
     
     int grayThreshold;
     bool learnBg;

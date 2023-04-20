@@ -1,6 +1,7 @@
 obj/linuxarmv6l/Release/src/ParticleSystem.o: \
  /home/pi/openFrameworks/apps/myApps/final/src/ParticleSystem.cpp \
  /home/pi/openFrameworks/apps/myApps/final/src/ParticleSystem.h \
+ /home/pi/openFrameworks/apps/myApps/final/src/Particle.h \
  /home/pi/openFrameworks/libs/openFrameworks/ofMain.h \
  /home/pi/openFrameworks/libs/openFrameworks/utils/ofConstants.h \
  /opt/vc/include/bcm_host.h \
@@ -625,10 +626,11 @@ obj/linuxarmv6l/Release/src/ParticleSystem.o: \
  /home/pi/openFrameworks/libs/openFrameworks/video/ofGstVideoPlayer.h \
  /home/pi/openFrameworks/libs/openFrameworks/3d/of3dUtils.h \
  /home/pi/openFrameworks/libs/openFrameworks/3d/ofCamera.h \
- /home/pi/openFrameworks/libs/openFrameworks/3d/ofEasyCam.h \
- /home/pi/openFrameworks/apps/myApps/final/src/Particle.h
+ /home/pi/openFrameworks/libs/openFrameworks/3d/ofEasyCam.h
 
 /home/pi/openFrameworks/apps/myApps/final/src/ParticleSystem.h:
+
+/home/pi/openFrameworks/apps/myApps/final/src/Particle.h:
 
 /home/pi/openFrameworks/libs/openFrameworks/ofMain.h:
 
@@ -1923,5 +1925,3 @@ obj/linuxarmv6l/Release/src/ParticleSystem.o: \
 /home/pi/openFrameworks/libs/openFrameworks/3d/ofCamera.h:
 
 /home/pi/openFrameworks/libs/openFrameworks/3d/ofEasyCam.h:
-
-/home/pi/openFrameworks/apps/myApps/final/src/Particle.h:

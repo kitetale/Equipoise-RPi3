@@ -4,7 +4,7 @@
 ParticleSystem::ParticleSystem(){
     velocity = 0.0;
     radius = 5.0;
-    lifetime = 5.0; 
+    this->lifeTime = 5.0; 
 
     velocityRnd = 20.0;
     velocityMotion = 50.0;
@@ -12,7 +12,7 @@ ParticleSystem::ParticleSystem(){
     radiusRnd = 50.0;
 
     totalParticlesCreated = 0;
-    nParticles = 300;
+    this->nParticles = 300;
     contourRadius = 15;
 
     particles.clear();
@@ -34,7 +34,7 @@ void ParticleSystem::setup(float w, float h, ofPoint initPos, float maxForce, fl
     this->maxForce = maxForce;
     this->maxSpeed = maxSpeed;
 
-    addParticles(nParticles);
+    addParticles(this->nParticles);
 }
 
 bool comparisonFunction(Particle * a, Particle * b) {
@@ -51,15 +51,15 @@ void ParticleSystem::update(vector<ofPolyline> c){
     //     if (!particles[i]->isAlive){
     //         delete particles.at(i);
     //         particles.erase(particles.begin() + i);
-    //         numParticles--;
+    //         nParticles--;
     //     } else {
     //         i++;
     //     }
     // }
 
      for (int i=0; i < particles.size(); i++){
-        particles[i].follow(c,contourRadius);
-        particles[i].update();
+        particles[i]->follow(c,contourRadius);
+        particles[i]->update();
      }
 }
 
@@ -69,29 +69,37 @@ void ParticleSystem::draw(){
     }
 }
 
+ofPoint ParticleSystem::randomVector(){
+	float angle = ofRandom((float)M_PI*2.0f);
+	return ofPoint(cos(angle),sin(angle));	
+}
+
+float ParticleSystem::randomRange(float percentage, float value){
+	return ofRandom(value-(percentage/100)*value, value+(percentage/100)*value);
+}
 
 void ParticleSystem::addParticle(ofPoint pos, ofPoint vel, ofColor color, float radius, float lifetime){
     Particle * newParticle = new Particle();
     float id = totalParticlesCreated;
 
-    newParticle->w = w;
-    newParticle->h = h;
+    newParticle->w = this->w;
+    newParticle->h = this->h;
 
     newParticle->setup(id,pos,vel,color,radius,lifetime);
     particles.push_back(newParticle);
 
-    numParticles++;
+    nParticles++;
     totalParticlesCreated++;
 }
 
 void ParticleSystem::addParticles(int n){
     for(int i = 0; i < n; i++){
-        ofPoint pos = ofPoint(ofRandom(w), ofRandom(h)); // random point on screen
+        ofPoint pos = ofPoint(ofRandom(this->w), ofRandom(this->h)); // random point on screen
         //ofPoint pos = initPos; //center of contour blob
         ofPoint vel = randomVector()*(velocity+randomRange(velocityRnd, velocity));
 
         float initRadius = radius + randomRange(radiusRnd, radius);
-        float lifetime = this->lifetime + randomRange(lifetimeRnd, this->lifetime);
+        float lifetime = this->lifeTime + randomRange(lifetimeRnd, this->lifeTime);
 
         addParticle(pos, vel, ofColor(255,140,0), initRadius, lifetime);
     }

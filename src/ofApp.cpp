@@ -38,7 +38,7 @@ void ofApp::setup(){
     grayThreshold = 30;
     learnBg = false;
     
-    smoothingSize = 0.0
+    smoothingSize = 0.0;
     
     cf.setSortBySize(true);
     cfv.setMinAreaRadius(10);
@@ -46,7 +46,7 @@ void ofApp::setup(){
     cfv.setAutoThreshold(true);
     
 	particles = new ParticleSystem();
-	particles->setup(w,h,20,120);
+	particles->setup(w,h,ofPoint(0),20.0f,120.0f);
 	// font.load("Montserrat.ttf", 20);
 }
 
