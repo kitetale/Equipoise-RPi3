@@ -15,6 +15,7 @@ class Particle {
         Particle();
         
         void setup(float id, ofPoint pos, ofPoint vel, ofColor color, float radius, float lifetime);
+        void update();
         void update(float dt);
         void draw();
         

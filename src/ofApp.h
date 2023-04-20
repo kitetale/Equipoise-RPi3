@@ -8,7 +8,7 @@
 #include "ofxKinect.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
-#include "Particle.h"
+#include "ParticleSystem.h"
 
 using namespace ofxCv;
 using namespace cv;
@@ -52,6 +52,8 @@ class ofApp : public ofBaseApp{
     vector<ofPolyline> prevContours;
     vector<ofPolyline> diffContours;
     vector<ofPolyline> velContours;
+
+    ParticleSystem *particles;
     
     int grayThreshold;
     bool learnBg;

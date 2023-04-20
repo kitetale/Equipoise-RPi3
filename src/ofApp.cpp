@@ -45,7 +45,9 @@ void ofApp::setup(){
     cfv.setMaxAreaRadius(500);
     cfv.setAutoThreshold(true);
     
-    // font.load("Montserrat.ttf", 20);
+	particles = new ParticleSystem();
+	particles->setup(w,h,20,120);
+	// font.load("Montserrat.ttf", 20);
 }
 
 //--------------------------------------------------------------
@@ -93,6 +95,8 @@ void ofApp::update(){
 			ctv = cfv.getPolyline(i);
 			velContours[i] = ctv;
 		}
+
+		particles->update(contours);
     }
     
     
@@ -146,6 +150,9 @@ void ofApp::draw(){
 		for (int i=0; i<contours.size(); i++){
 			contours[i].draw();
 		}
+
+
+		particles->draw();
 		ofPopStyle();
 	} else {
 		ofBackground(255); 
