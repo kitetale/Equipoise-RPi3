@@ -38,13 +38,20 @@ class ofApp : public ofBaseApp{
     
     ofxKinect kinect;
     ofxCvColorImage colorImage;
-    ofImage imgDiff;
+    ofImage imgDiff,depthImg;
     ofPixels prevPx;
     ofPixels imgPx;
     ofxCvGrayscaleImage grayImage, grayBg, grayDiff;
     
     ofxCvContourFinder contourFinder;
     ofxCvGrayscaleImage contourImg;
+    
+    ContourFinder cf;//contour finder in ofxCv -- allows polyline extraction
+    ContourFinder cfv;//contour finder velocity mask
+    vector<ofPolyline> contours;
+    vector<ofPolyline> prevContours;
+    vector<ofPolyline> diffContours;
+    vector<ofPolyline> velContours;
     
     int grayThreshold;
     bool learnBg;

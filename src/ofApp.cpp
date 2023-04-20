@@ -38,6 +38,13 @@ void ofApp::setup(){
     grayThreshold = 30;
     learnBg = false;
     
+    smoothingSize = 0.0
+    
+    cf.setSortBySize(true);
+    cfv.setMinAreaRadius(10);
+    cfv.setMaxAreaRadius(500);
+    cfv.setAutoThreshold(true);
+    
     // font.load("Montserrat.ttf", 20);
 }
 
@@ -47,7 +54,9 @@ void ofApp::update(){
     if (kinect.isFrameNew()){
         colorImage.setFromPixels(kinect.getPixels());
         grayImage.setFromPixels(kinect.getDepthPixels());
-        
+        depthImg.setFromPixels(kinect.getDepthPixels());
+        depthImg.mirror(false,true);
+        depthImg.update();
         
         absdiff(kinect,prevPx,imgDiff);
         imgDiff.update();
@@ -64,7 +73,26 @@ void ofApp::update(){
 		
 		contourFinder.findContours(contourImg, 30, (w*h), 10, true);
 		simplifyContour();
-                
+		
+		
+		cf.findContours(depthImg);
+		cfv.findContours(grayDiff);
+		contours.clear();
+		velContours.clear();
+		contours.resize(cf.size());
+		velContours.resize(cfv.size());
+        
+        for(int i=0; i<cf.size(); i++){
+			ofPolyline ct;
+			ct = cf.getPolyline(i);
+			ct = ct.getSmoothed(smoothingSize,0.5); //smoothing size
+			contours[i] = ct;
+		}
+		for(int i=0; i<cfv.size(); i++){
+			ofPolyline ctv;
+			ctv = cfv.getPolyline(i);
+			velContours[i] = ctv;
+		}
     }
     
     
@@ -92,12 +120,14 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofBackground(255); 
-	ofSetColor(0);
+	ofSetColor(255);
 	if (viewType == 1){
+		ofBackground(255); 
 		kinect.draw(0,0,w,h);
     } else if (viewType == 2){
 		contourFinder.draw(0,0,w,h);
 	} else if (viewType == 3){
+		ofBackground(255); 
 		contourImg.draw(0,0,w,h);
 	} else if (viewType == 4){
 		//for(auto poly: polys) poly.draw();
@@ -108,6 +138,15 @@ void ofApp::draw(){
 		glPointSize(2);
 		mesh.drawVertices();
 		ofPopMatrix();
+	} else if (viewType == 5){
+		ofPushStyle();
+		ofBackground(255); 
+		ofSetColor(0);
+		ofSetLineWidth(1.5);
+		for (int i=0; i<contours.size(); i++){
+			contours[i].draw();
+		}
+		ofPopStyle();
 	} else {
 		ofBackground(255); 
 		ofSetColor(0);
@@ -125,7 +164,7 @@ void ofApp::draw(){
 	}
 	
 	// draw debug info
-	//ofSetColor(0);
+	ofSetColor(0);
 	//if(viewType==3) ofSetColor(255);
 	stringstream reportStream;
 	reportStream << "set near threshold " << nearClip << " (press: + -)" << endl
@@ -163,6 +202,9 @@ void ofApp::keyPressed(int key){
 			break;
 		case '4':
 			viewType = 4;
+			break;
+		case '5':
+			viewType = 5;
 			break;
 		case '>':
 		case '.':
