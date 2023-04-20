@@ -18,8 +18,8 @@ void ofApp::setup(){
     h = kinect.height;
     w = kinect.width;
     
-    nearClip = 400; // in mm
-    farClip = 8000; // in mm
+    nearClip = 380; // in mm
+    farClip = 700; // in mm
     kinect.setDepthClipping(nearClip,farClip);
     
     colorImage.allocate(w,h);
@@ -31,8 +31,10 @@ void ofApp::setup(){
     imgPx.allocate(w,h,OF_IMAGE_COLOR);
     output.allocate(w,h,OF_IMAGE_COLOR);
     
+    simplifyTolerance = 3;
+    
     viewType = 1;
-    contourImg.allocate(w,h,OF_IMAGE_GRAYSCALE);
+    contourImg.allocate(w,h);
     grayThreshold = 30;
     learnBg = false;
     
@@ -46,6 +48,7 @@ void ofApp::update(){
         colorImage.setFromPixels(kinect.getPixels());
         grayImage.setFromPixels(kinect.getDepthPixels());
         
+        
         absdiff(kinect,prevPx,imgDiff);
         imgDiff.update();
         imgDiff.mirror(false, true);
@@ -53,27 +56,31 @@ void ofApp::update(){
         
         grayDiff.absDiff(grayBg, grayImage);
         grayDiff.threshold(grayThreshold);
-        contourFinder.findContours(grayImage, 30, (w*h), 10, true);
-           
-        
+       
+             
         //flatten depth a bit for contour
-        u_char* contourImg_data = contourImg.getPixels().getData();
-        for (int y=0; y<h; ++y){
-			for (int x=0; x<w; ++x){
-				ofVec3f point;
-				point = kinect.getWorldCoordinateAt(x,y);
-				if (point.z>farClip || point.z<=0 || point.z<nearClip){
-					contourImg_data[x+y*w] = 0;
-				} else {
-					contourImg_data[x+y*w] = 255;
-				}
-			}
-		}
-		contourImg.update();
+		contourImg = grayImage;
+		contourImg.threshold(30);
+		
+		contourFinder.findContours(contourImg, 30, (w*h), 10, true);
+		simplifyContour();
                 
     }
     
     
+}
+//--------------------------------------------------------------
+void ofApp::simplifyContour(){
+	polys.resize(contourFinder.blobs.size());
+	mesh.clear();
+	for (int i=0; i<contourFinder.blobs.size(); i++){
+		ofPolyline &poly = polys[i];
+		poly.clear();
+		poly.addVertices(contourFinder.blobs[i].pts);
+		poly.simplify(simplifyTolerance);
+		mesh.addVertices(poly.getVertices());
+		
+	}
 }
 
 //--------------------------------------------------------------
@@ -84,15 +91,23 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	ofBackground(255); 
+	ofSetColor(0);
 	if (viewType == 1){
-		//ofBackground(255); 
 		kinect.draw(0,0,w,h);
     } else if (viewType == 2){
-		ofBackground(255); 
 		contourFinder.draw(0,0,w,h);
 	} else if (viewType == 3){
-		ofBackground(0); 
 		contourImg.draw(0,0,w,h);
+	} else if (viewType == 4){
+		//for(auto poly: polys) poly.draw();
+		ofPushMatrix();
+		ofSetColor(0);
+		mesh.drawWireframe();
+		ofSetColor(0,255,0);
+		glPointSize(2);
+		mesh.drawVertices();
+		ofPopMatrix();
 	} else {
 		ofBackground(255); 
 		ofSetColor(0);
@@ -110,8 +125,8 @@ void ofApp::draw(){
 	}
 	
 	// draw debug info
-	ofSetColor(0);
-	if(viewType==3) ofSetColor(255);
+	//ofSetColor(0);
+	//if(viewType==3) ofSetColor(255);
 	stringstream reportStream;
 	reportStream << "set near threshold " << nearClip << " (press: + -)" << endl
 	<< "set far threshold " << farClip << " (press: < >) num blobs found " << contourFinder.nBlobs
@@ -151,24 +166,24 @@ void ofApp::keyPressed(int key){
 			break;
 		case '>':
 		case '.':
-			farClip ++;
+			farClip += 10;
 			if (farClip > 8000) farClip = 8000;
 			break;
 			
 		case '<':
 		case ',':
-			farClip --;
+			farClip -= 10;
 			if (farClip < 0) farClip = 0;
 			break;
 			
 		case '+':
 		case '=':
-			nearClip ++;
+			nearClip += 10;
 			if (nearClip > 8000) nearClip = 8000;
 			break;
 			
 		case '-':
-			nearClip --;
+			nearClip -= 10;
 			if (nearClip < 0) nearClip = 0;
 			break;
 		case 'l':
@@ -181,6 +196,7 @@ void ofApp::keyPressed(int key){
 			}
 			break;
         default:
+			viewType = 0;
             break;
     }
 }

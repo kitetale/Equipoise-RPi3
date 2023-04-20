@@ -1,3 +1,7 @@
+// 'Equipoise' Kinect-based real-time interactive installation RPi3 code
+// Ashley Kim (@kitetale) 
+// 4/20/2023
+
 #pragma once
 
 #include "ofMain.h"
@@ -28,6 +32,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		
+		void simplifyContour();
     
     
     ofxKinect kinect;
@@ -38,11 +44,16 @@ class ofApp : public ofBaseApp{
     ofxCvGrayscaleImage grayImage, grayBg, grayDiff;
     
     ofxCvContourFinder contourFinder;
-    ofImage contourImg;
+    ofxCvGrayscaleImage contourImg;
     
     int grayThreshold;
     bool learnBg;
     ofImage output; //ofImage for saving to os
+    
+    vector<ofPolyline> polys;
+    ofMesh mesh;
+    
+    float simplifyTolerance;
     
     ofTrueTypeFont font;
     
